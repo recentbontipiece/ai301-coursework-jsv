@@ -15,8 +15,7 @@ label is not graded.
 
 **GitHub username**
 
-[Your GitHub username, exactly as it appears on your profile — no `@`, no profile URL. Your
-comments upstream are identified by this name.]
+recentbontipiece
 
 ---
 
@@ -24,16 +23,18 @@ comments upstream are identified by this name.]
 
 **Claim comment**
 
-[Link to the comment where you claimed the issue. Use the comment's own permalink, not the
-issue page on its own. **Then paste the text of that comment underneath the link** — the
-pasted text is what this field is graded on, so copy across what you actually posted.]
+[Pending: after posting, replace this note with the comment's permalink. The accepted
+live-checked text to post is:
+
+Hi, I’d like to investigate this documentation issue. I’ll verify the hybrid retriever’s
+default weights and score normalization against `docs/ARCHITECTURE.md`, then report the
+exact behavior with a small worked example. I’ll share what I can confirm before proposing
+any documentation change.]
 
 **Reproduction comment**
 
-[Link to the comment where you posted your reproduction. It must record the environment
-(OS, relevant versions, code state), steps a stranger could follow, and what you observed.
-**Then paste the text of that comment underneath the link** — the pasted text is what this
-field is graded on, so copy across what you actually posted.]
+[Pending: complete and verify the reproduction, run the full-package live check, and post
+the report. Then add the comment permalink and exact posted text here.]
 
 ## Eval iterations
 
@@ -42,28 +43,41 @@ fields.
 
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+1. Initial full run: `agreement: 18/20 scored items  (bar: 18/20: PASS)`; `pkg-05`
+	and `pkg-12` were false rejects.
+2. Targeted rerun: `agreement: 2/2 scored items`; both packages matched gold `accept`.
+3. Canary rerun: `agreement: 3/3 scored items`; `pkg-20` matched gold `reject`.
+4. Confirming full run: `agreement: 20/20 scored items  (bar: 18/20: PASS)`;
+	all five categories matched.
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+`pkg-05`: the initial rubric decided `reject`, while the gold label was `accept`. The
+package's observed parser output was `Expecting value: line 1 column 1 (char 0)` after
+running `conda env update --quiet --json -f env.yml 2>/dev/null`. The initial evaluation
+recorded `pkg-05  accept  reject  NO  failed: rerunnable, repo-comms`. I treated the
+unquoted `env.yml` contents and ancillary `conda info`/`conda list` diagnostics as
+blockers, although the public issue supplies the command and the report shows the stdout
+warning breaking JSON. The revision narrowed those checks to omissions that prevent
+reaching or assessing the behavior; the final run records `pkg-05  accept  accept  yes`.
 
 **Check rationale**
 
-[Quote one check from the `rubric.md` you uploaded to `tools/repro-check/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+`| repo-comms | Claim comment and repro comment, read with the repo-facts block's issue-template asks and contribution/AI policy | Pass if the claim identifies this issue and a concrete next investigation step without promising a fix or date; the report includes template-requested information when it is needed to identify or assess the reproduction; and any AI disclosure explicitly required by policy is present. Omission of ancillary diagnostics does not fail an otherwise assessable package. No disclosure is required when policy is silent or has no disclosure requirement. Fail for generic claim boilerplate, unsupported certainty or timeline, missing material template information, or missing required AI disclosure. | required |`
+
+I narrowed the earlier rule that required every listed template field. The eval showed
+ancillary diagnostics can be absent while behavior remains directly assessable; material
+report information and explicit disclosure requirements still gate the verdict.
 
 **Trade-offs**
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
+The revised threshold accepts `pkg-05` and `pkg-12`, which the initial rubric rejected for
+missing ancillary details despite clear artifacts. This creates some risk of accepting a
+report that omits useful diagnostics, but only when the omission does not block reproducing
+or assessing the behavior. I re-ran `pkg-20` as the disclosure-category canary after
+loosening the checks; it remained rejected because the required AI-use disclosure is
+missing. The final run records `pkg-20  reject  reject  yes` and `disclosure 1/1`; the
+wrong-target and unfollowable categories also remained fully matched.
 
 ---
 

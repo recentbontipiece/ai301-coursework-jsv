@@ -1,0 +1,1 @@
+Hi, I’d like to investigate this documentation issue. I’ll verify the hybrid retriever’s default weights and score normalization against `docs/ARCHITECTURE.md`, then report the exact behavior with a small worked example. I’ll share what I can confirm before proposing any documentation change.
