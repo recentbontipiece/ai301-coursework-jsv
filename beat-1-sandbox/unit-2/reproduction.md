@@ -23,18 +23,82 @@ recentbontipiece
 
 **Claim comment**
 
-[Pending: after posting, replace this note with the comment's permalink. The accepted
-live-checked text to post is:
+[Posted comment](https://github.com/codepath/pathreview-ai301-fa26-s3/issues/11#issuecomment-5863822785)
 
 Hi, I’d like to investigate this documentation issue. I’ll verify the hybrid retriever’s
 default weights and score normalization against `docs/ARCHITECTURE.md`, then report the
 exact behavior with a small worked example. I’ll share what I can confirm before proposing
-any documentation change.]
+any documentation change.
 
 **Reproduction comment**
 
-[Pending: complete and verify the reproduction, run the full-package live check, and post
-the report. Then add the comment permalink and exact posted text here.]
+Status: **Draft, not posted.** Permalink: pending. The report below passed the live check;
+post it, then replace this status with the comment permalink and exact posted text.
+
+> Environment: macOS 26.2 (arm64), Git 2.40.0. I inspected the PathReview fork
+> `recentbontipiece/pathreview-ai301-fa26-s3` at commit
+> `2f4e82f52efbcfcc57d65b3fa5348672163ca088`, the same revision as upstream
+> `codepath/pathreview-ai301-fa26-s3` `main`. This is a documentation check, so no
+> application runtime or service is needed.
+>
+> Steps:
+>
+> 1. Clone the fork, pin the revision, and verify it matches upstream:
+>
+> ```sh
+> git clone https://github.com/recentbontipiece/pathreview-ai301-fa26-s3.git
+> cd pathreview-ai301-fa26-s3
+> git checkout 2f4e82f52efbcfcc57d65b3fa5348672163ca088
+> git remote add upstream https://github.com/codepath/pathreview-ai301-fa26-s3.git
+> git fetch upstream main
+> git rev-parse HEAD upstream/main
+> ```
+>
+> Both revisions printed as `2f4e82f52efbcfcc57d65b3fa5348672163ca088`.
+>
+> 2. Read the architecture section:
+>
+> ```sh
+> sed -n '59,61p' docs/ARCHITECTURE.md
+> ```
+>
+> Observed output:
+>
+> ```text
+> ### RAG System (`rag/`)
+> Hybrid retrieval (vector similarity + BM25 keyword) fetches relevant context from the user's ingested documents. The generator uses prompt templates to produce structured, evidence-based feedback. The evaluator scores retrieval relevance and generation faithfulness.
+> ```
+>
+> 3. Read the implementation:
+>
+> ```sh
+> sed -n '16,20p;72,115p' rag/retriever/hybrid.py
+> ```
+>
+> Relevant output excerpt:
+>
+> ```python
+> vector_weight: float = 0.7,
+> keyword_weight: float = 0.3,
+> vector_scores_max = max([r["score"] for r in vector_results], default=1.0)
+> keyword_scores_max = max([r.get("bm25_score", 0) for r in keyword_results], default=1.0)
+> vector_score = vector_map[chunk_id]["score"] / vector_scores_max
+> keyword_score = keyword_map[chunk_id].get("bm25_score", 0) / keyword_scores_max
+> blended_score = self.vector_weight * vector_score + self.keyword_weight * keyword_score
+> ```
+>
+> For an illustrative example, if a chunk's raw vector score is `0.8` out of a batch maximum
+> of `1.0` and its BM25 score is `6` out of a batch maximum of `12`, its normalized scores
+> are `0.8` and `0.5`; the default blend is `0.7 * 0.8 + 0.3 * 0.5 = 0.71`. These values
+> illustrate the formula; they are not claimed as output from a retrieval run.
+>
+> Expected: as issue #11 requests, `docs/ARCHITECTURE.md` explains the scoring logic with an
+> example, including normalization and default weights.
+>
+> Observed: the source implements separate max normalization and a weighted sum with
+> defaults `0.7` and `0.3`; the architecture page only names vector similarity and BM25.
+> The fork and upstream were the same commit, so the fork check did not introduce a source
+> difference. This confirms the documentation gap in issue #11; it is not a runtime failure.
 
 ## Eval iterations
 
