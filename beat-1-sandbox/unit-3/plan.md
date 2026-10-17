@@ -203,3 +203,24 @@ Two things differ from the plan as written:
 The per-batch normalization reading I flagged as an open question in the plan
 is unchanged: I documented it as observed behaviour rather than as a design
 decision, and it is still waiting on a maintainer to confirm which it is.
+
+### Unit 4 update: the CI guard has now run
+
+Deviation 2 is closed, with two differences from what I said I would do:
+
+- **Setup was narrower than `make setup`.** I created `.venv` with Python 3.12
+  and ran `pip install -e ".[dev]"` instead of the full `make setup`, because
+  the checks need only the dev tools; the migration, seed, and frontend steps
+  of `make setup` are not involved in a docs-only change. (The first attempt
+  with an x86_64 Python 3.11 failed to build `libcst`, so I switched
+  interpreters.)
+- **I ran four checks, not three.** Path Review's PR template lists
+  `make test-unit`, `make test-integration`, `make lint`, and
+  `make typecheck`, so I ran all four. Results on the branch: unit tests
+  375 passed and 53 xfailed; lint and typecheck clean;
+  `make test-integration` reports "no tests ran", because Path Review has no
+  integration tests yet. Full output is in `test_evidence.md` and the PR
+  description.
+
+The change itself is unchanged: still the one commit to `docs/ARCHITECTURE.md`
+described above.
