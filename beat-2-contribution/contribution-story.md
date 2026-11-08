@@ -56,18 +56,12 @@ one in the week it belongs to.
 
 **Unit 5: grew issue-select into issue-scout, wrote my search strategy, and patched my rubric after three wild scans (2026-11-08)**
 
-I installed the issue-scout overlay, extended my fit profile with four
-search priorities (Python first, TypeScript fallback, bugs/docs over
-features, live projects), and wrote four `gh search issues` queries
-with free ranking filters. Scan 1 surfaced only minutes-old issues in
-brand-new solo repos (two translations and a Windows build guide), so I
-added date windows, an issue-number >= 50 scale floor, skill/platform
-and classroom-repo drops, and a strict bug-before-docs order. Scan 2
-then showed that my rubric's `not-claimed` check still carried the Path
-Review house rule (claim comments ignored) and passed an issue someone
-had already claimed. I patched it so recent unanswered claim comments
-block (Unit 1 regression: 20/20, bar 18/20), and added `-linked:pr` to
-every query, which made scan 3's claim failures come only from comments.
+I turned my issue-select skill into issue-scout, which searches all of
+GitHub for me. My first scan found only brand-new tiny projects, so I
+changed my search to skip them and to prefer bugs. My second scan
+showed my rubric still ignored people's "I'll take this" comments, a
+leftover classroom rule, so I fixed it and re-tested it against the
+Unit 1 test set (20/20). My third scan found the issue I claimed.
 
 **Unit 6: [one line on the tool work]**
 
@@ -99,11 +93,20 @@ assigned, no PR is open, the contribution policy has no AI ban, and it
 is one bounded change with an acceptance checklist. In scan 3 it was
 the only accepted issue I could realistically take. The other accept
 (spyre-inference#672) needs IBM accelerator hardware and auto-merges
-PRs with no human review. It fits my profile because it is a live,
-maintained project (F4), a bug (F3), and it needs a Mac, which I have.
-The honest gap is F1: the work is image assets plus JavaScript tests,
-not Python. I want to learn how a real maintainer reviews an outside
-PR, and how template images and the project's asset tests work.
+PRs with no human review. It fits my profile because it's an active
+project with real maintainers, it's a bug fix with a clear finish line,
+and it needs a Mac, which I have. The downside: the work is image files
+and JavaScript tests, not Python, which is the language I most wanted
+to practise. I want to see how a real project reviews code from someone
+new, and how template images and the project's asset tests work.
+
+As a lead Android developer, I review code and work with other leads to
+maintain our codebase, but this is the first time in my life I've posted
+on an AMD project, and that felt weird. After reviewing the issue, I
+think I have a good understanding of what the problem is and how to fix
+it, and that's why I want this fix merged. How fast people claim "good
+first issues" didn't surprise me at all: that's expected for open-source
+projects.
 
 The scout fell short in the wild in three ways, and each became a patch.
 Scan 1's ranking rewarded newness, so it surfaced same-day toy repos.
@@ -233,9 +236,8 @@ built and run the desktop app.
 
 **Toolkit**
 
-- Tool: Claude Code ran the reproduction in my clone and drafted the
-  claim and repro comments. I checked them against my repro-check
-  rubric and voice guide by hand.
+- Tool: Claude Code ran the reproduction in my clone and drafted both
+  comments; I read them and posted them myself.
 - What it produced: the two-command, Node-only reproduction above, and
   a posted repro comment that separates what is confirmed (assets) from
   what is not (menu-bar rendering).
