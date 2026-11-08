@@ -1,4 +1,4 @@
-# Contribution: [Issue Title]
+# Contribution: amd/gaia#5281: macOS menu-bar icon is a plain square, not the GAIA logo
 
 Path: `beat-2-contribution/contribution-story.md`
 
@@ -7,12 +7,11 @@ the repository is not read. **Keep every section header below under its exact na
 format criteria grade exactly that. Your course repo link is the whole submission: no tool
 files and no evidence uploads are part of Assignment 5.
 
-**Contribution Number:** [1]
-**Student:** [Student name]
-**GitHub Username:** [your GitHub username, exactly as it appears on your profile - no @, no
-profile URL. Your comments upstream are identified by this name.]
-**Issue:** [GitHub issue link]
-**Pull Request:** [GitHub PR link, once opened]
+**Contribution Number:** 1
+**Student:** John Vallon
+**GitHub Username:** recentbontipiece
+**Issue:** https://github.com/amd/gaia/issues/5281
+**Pull Request:** not opened yet (waiting for maintainer reply to claim and repro, 2026-11-08)
 
 One repository, built across units 5 to 8, telling the whole story of your real
 contribution. Fill it as you work, not at the end — the sections below ask for evidence that
@@ -55,10 +54,20 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: grew issue-select into issue-scout, wrote my search strategy, and patched my rubric after three wild scans (2026-11-08)**
 
-[2-4 sentences: what you built (the scout, your strategy), what broke
-or fell short, what changed because of it.]
+I installed the issue-scout overlay, extended my fit profile with four
+search priorities (Python first, TypeScript fallback, bugs/docs over
+features, live projects), and wrote four `gh search issues` queries
+with free ranking filters. Scan 1 surfaced only minutes-old issues in
+brand-new solo repos (two translations and a Windows build guide), so I
+added date windows, an issue-number >= 50 scale floor, skill/platform
+and classroom-repo drops, and a strict bug-before-docs order. Scan 2
+then showed that my rubric's `not-claimed` check still carried the Path
+Review house rule (claim comments ignored) and passed an issue someone
+had already claimed. I patched it so recent unanswered claim comments
+block (Unit 1 regression: 20/20, bar 18/20), and added `-linked:pr` to
+every query, which made scan 3's claim failures come only from comments.
 
 **Unit 6: [one line on the tool work]**
 
@@ -80,24 +89,53 @@ drafted, what you did with the draft.]
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs in your own words: how you searched, what your scan
-surfaced, what your scout's verdict said, why this issue fits your
-profile, and what you hope to learn. If your scout's verdict on it
-was reject and you chose it anyway, say so here and say why; choosing
-against your own tool silently is what loses points. Close with an
-honest read of the tool itself: where the scout fell short on a real
-wild search and what you changed or would change, or what convinced
-you it held up. **Record the link to your claim comment in this section too.**
-Not claimed yet? Write `claim pending` and today's date where the link goes,
-and add the link the moment your claim lands.]
+I searched all of GitHub with issue-scout: four `gh search issues`
+queries for "good first issue" labels (Python bugs, Python docs, any
+Python issue, TypeScript), ranked by my strategy's free filters, with
+the top five graded by my rubric. amd/gaia#5281 came up in scan 2 and
+again in scan 3, and both times my scout accepted it: the repo is
+active (all five latest commits on the scan day, 1.6k stars), nobody is
+assigned, no PR is open, the contribution policy has no AI ban, and it
+is one bounded change with an acceptance checklist. In scan 3 it was
+the only accepted issue I could realistically take. The other accept
+(spyre-inference#672) needs IBM accelerator hardware and auto-merges
+PRs with no human review. It fits my profile because it is a live,
+maintained project (F4), a bug (F3), and it needs a Mac, which I have.
+The honest gap is F1: the work is image assets plus JavaScript tests,
+not Python. I want to learn how a real maintainer reviews an outside
+PR, and how template images and the project's asset tests work.
+
+The scout fell short in the wild in three ways, and each became a patch.
+Scan 1's ranking rewarded newness, so it surfaced same-day toy repos.
+My rubric still ignored claim comments, so it accepted pydynox#559,
+which someone had already claimed. And 3 of 5 grading slots went to
+issues with open linked PRs. I fixed all three (see Toolkit). One gap
+is still open: nothing in my rubric checks that a human reviews PRs.
+An auto-merge bot setup passed in scan 1 (agentswarm-cli#4) and again
+in scan 3 (spyre-inference#672).
+
+Claim comment (2026-11-08): https://github.com/amd/gaia/issues/5281#issuecomment-6728341739
 
 **Toolkit**
 
-- Tool: issue-scout (your scout: your search strategy, your rubric),
-  and how you used it
-- What it produced: [the scan and its verdict on this issue, described]
-- Difficulties: [where it fell short, or "none met" if none did]
-- What changed: [what you patched or would update, or "nothing"]
+- Tool: issue-scout, run as `claude "issue-scout: run a scan"` three
+  times. It follows my `search-strategy.md` (queries + ranking filters,
+  top 5) and grades with my `rubric.md`.
+- What it produced: scan 3 graded 5 of 111 ranked survivors (377 unique
+  results). It accepted amd/gaia#5281 with every required check passing:
+  repo-liveness, not-claimed, policy-allow, bounded-scope, and
+  well-specified.
+- Difficulties: scan 1's top 5 were all minutes-old issues in tiny repos.
+  The rubric's `not-claimed` check still followed the classroom rule and
+  passed a claimed issue. Search can't see claim comments, so 3 of 5
+  scan-3 slots still failed on them. And no check catches bot-only
+  review.
+- What changed: strategy v2 (date windows, issue# >= 50,
+  translation/Windows/classroom drops, strict Q1>Q2>Q3>Q4, prefer
+  MEMBER/COLLABORATOR), then `-linked:pr` on every query. The rubric's
+  `not-claimed` now counts recent claim comments (Unit 1 regression
+  20/20). I'd add a required "a human maintainer reviews PRs" check
+  next.
 
 ---
 
@@ -105,26 +143,50 @@ and add the link the moment your claim lands.]
 
 **Problem Description**
 
-[In your own words, what is broken or missing?]
+GAIA's desktop app puts an icon in the macOS menu bar. The two image
+files it uses there are placeholders, not the GAIA logo. They are
+solid-white squares. The Linux tray had the same kind of placeholder (a
+red square, #5268), which was fixed in #5273, but the macOS files were
+left as they were.
 
 **Expected Behavior**
 
-[What should happen?]
+The menu bar shows the GAIA logo as a proper macOS *template image*: a
+black glyph on a transparent background, which macOS tints
+automatically for light and dark menu bars.
 
 **Current Behavior**
 
-[What actually happens?]
+Both template files are a single colour: every pixel is opaque white.
+macOS draws template images from their alpha channel, so a fully
+opaque image should show as a filled square. I have confirmed the files,
+not yet the rendered menu bar (see Reproduction).
 
 **Affected Components**
 
-[Which parts of the codebase are involved?]
+- `src/gaia/apps/webui/assets/tray-iconTemplate.png` and `tray-iconTemplate@2x.png`:
+  the placeholder assets.
+- `src/gaia/apps/webui/services/tray-manager.cjs`: `ICON_SPECS.darwin`
+  (lines 84–90) loads those two files at 16/32 px, and `_iconFor()`
+  calls `setTemplateImage(true)` (line 651).
+- `src/gaia/apps/webui/services/tray-icons.cjs`: draws the state badges
+  on top of the logo, in black for template images.
+- `tests/electron/tray-manager.test.cjs` and `tests/electron/_helpers/tray-icon-png.cjs`:
+  the #5273 placeholder check, which currently runs only on the Linux
+  assets.
+- `src/gaia/apps/webui/assets/tray-icon-active*.png`: unused red
+  placeholders the issue asks to remove (`git grep` finds no references).
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: Claude Code reading the clone, plus `gh` for the linked PRs
+  (#5273, #5354). No course skill covers this phase.
+- What it produced: the file list above, traced from `ICON_SPECS.darwin`
+  to the assets and to the existing #5273 asset check.
+- Difficulties: a merged PR (#5354) cross-references the issue, which
+  made it look fixed. I had to check that it never touched the template
+  files.
+- What changed: nothing.
 
 ---
 
@@ -132,31 +194,58 @@ and add the link the moment your claim lands.]
 
 **Environment Setup**
 
-[What a stranger would need to stand this up: your operating system,
-the relevant versions (language, runtime, package manager, the project
-itself), and how you set the project up. Then the challenges you faced
-and how you solved them, or that none came up.]
+macOS 26.2 (arm64), Node v24.5.0, Git 2.40.0. I cloned `amd/gaia` at
+`main` = `03b04eea08f089e76a2d3cdc38d9877db21cb122` (2026-11-08).
+The check needs only Node and the repo's own test helper, with no `npm
+install` and no app build. The one challenge was the clone itself: the
+repo is large, and a full clone took several minutes. I have not yet
+built and run the desktop app.
 
 **Steps to Reproduce**
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. From the repo root, run the #5273 placeholder check
+   (`assertTrayLogoPng` in `tests/electron/_helpers/tray-icon-png.cjs`)
+   on `tray-icon.png` (32 px), `tray-iconTemplate.png` (16 px), and
+   `tray-iconTemplate@2x.png` (32 px), using a short `node -e` script
+   (full command in my repro comment).
+2. Decode both template files with the helper's `decodeRgbaPng` and list
+   every distinct RGBA value.
+3. Observed result: `tray-icon.png` passes. Both template files fail with
+   "corner (0,0) is opaque — expected the round logo on a transparent
+   background, not a filled square". Each template file contains exactly
+   one value, `ffffffff` (opaque white). `tray-manager.cjs` lines 84–90
+   confirm these are the files macOS loads.
 
 **Reproduction Evidence**
 
-- **Commit showing reproduction:** [link to commit in your fork]
-- **Screenshots/logs:** [if applicable]
-- **My findings:** [what you discovered during reproduction; an
-  honest, evidenced cannot-reproduce that led you to re-pick or ask
-  the maintainer belongs here and costs you nothing]
+- **Commit showing reproduction:** none yet. I reproduced on an
+  unmodified clone of upstream `main` (`03b04ee`), so there is no fork
+  commit. Planned: fork, and commit a failing test that runs the #5273
+  check on the macOS template files.
+- **Screenshots/logs:** the command output is posted in my repro comment:
+  https://github.com/amd/gaia/issues/5281#issuecomment-6728581084
+- **My findings:** confirmed at the asset level. Both macOS template
+  files are flat opaque-white squares with no glyph and no transparency,
+  and they fail the same check #5273 added for Linux. Not yet confirmed:
+  the rendered menu bar (needs a full app build). Open question I asked
+  the maintainer: `ICON_SPECS.darwin` uses 16/32 px, while the issue
+  suggests about 18/36 or 22/44.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: Claude Code ran the reproduction in my clone and drafted the
+  claim and repro comments. I checked them against my repro-check
+  rubric and voice guide by hand.
+- What it produced: the two-command, Node-only reproduction above, and
+  a posted repro comment that separates what is confirmed (assets) from
+  what is not (menu-bar rendering).
+- Difficulties: my posted claim first promised "a PR within the next
+  week", which breaks my voice guide ("I never promise a fix, merge, or
+  deadline"). I edited the comment to remove it. Also, repro-check's
+  live mode can't grade this package: its staff `scope.md` still allows
+  only the Path Review repo.
+- What changed: I edited the claim comment upstream. Next time I'll hold
+  the claim draft against my voice guide before posting, not after.
 
 ---
 
