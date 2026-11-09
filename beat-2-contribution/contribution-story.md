@@ -296,8 +296,9 @@ Replace both template PNGs with the GAIA logo as a real template image:
 a black glyph on a transparent background, made from the existing tray
 logo (`tray-icon@2x.png`). It's the robot head with the visor cut out
 and the two eyes kept, so it still reads as GAIA at 16 px. Add a test
-check for template icons, because `assertTrayLogoPng` asks for 64+
-colours, which a one-colour glyph can't have. Remove the unused
+check for template icons, because `assertTrayLogoPng` was built for
+the colour logo and doesn't check that a template is black or how much
+of the icon the glyph covers. Remove the unused
 `tray-icon-active*.png` placeholders.
 
 Not changing: the logic in `tray-manager.cjs` and `tray-icons.cjs`, the
