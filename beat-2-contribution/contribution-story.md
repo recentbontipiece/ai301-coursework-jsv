@@ -276,67 +276,158 @@ built and run the desktop app.
 
 **Analysis**
 
-[Your analysis of the root cause: what is causing the issue, traced
-to the files and functions involved.]
+On macOS, `src/gaia/apps/webui/services/tray-manager.cjs` picks its icons
+from `ICON_SPECS.darwin` (lines 84-90): `tray-iconTemplate.png` at 16 px
+and `tray-iconTemplate@2x.png` at 32 px. `_iconFor()` loads them, draws
+the state badge with `drawStateIcon(..., { template: true })` from
+`tray-icons.cjs`, and calls `setTemplateImage(true)` (line 651). macOS
+draws a template image from its alpha channel only. Both files were
+placeholders with every pixel opaque white (`ffffffff`), so the alpha
+mask was a full square. Nothing caught it because the placeholder check
+from #5273 (`assertTrayLogoPng` in
+`tests/electron/_helpers/tray-icon-png.cjs`) only runs on the Linux
+icons: the tray tests pass on `main` (135 tests) with the placeholders
+still there. `tray-icon-active.png` and `@2x` are flat red placeholders
+that nothing references.
 
 **Proposed Solution**
 
-[High-level description of your fix approach, and what you are
-deliberately NOT changing.]
+Replace both template PNGs with the GAIA logo as a real template image:
+a black glyph on a transparent background, made from the existing tray
+logo (`tray-icon@2x.png`). It's the robot head with the visor cut out
+and the two eyes kept, so it still reads as GAIA at 16 px. Add a test
+check for template icons, because `assertTrayLogoPng` asks for 64+
+colours, which a one-colour glyph can't have. Remove the unused
+`tray-icon-active*.png` placeholders.
+
+Not changing: the logic in `tray-manager.cjs` and `tray-icons.cjs`, the
+badges, the Linux and Windows icons, or the sizes. I kept 16/32 px to
+match `ICON_SPECS.darwin` and asked the maintainer about 18/36 or 22/44.
+If they want the larger sizes, I'll change the spec in the same PR. No
+new dependencies, and the script I used to make the PNGs stays out of
+the PR.
 
 **Implementation Plan**
 
-1. [Modify file X to do Y]
-2. [Add or change Z]
-3. [Update tests]
+1. Branch `fix/5281-macos-tray-template-icon` off `upstream/main`.
+2. Test first: add `assertTrayTemplatePng` (size, transparent corners,
+   every visible pixel black, glyph covering 20-90%) to the test helper,
+   plus a "macOS tray template asset" block in `tray-manager.test.cjs`.
+   Confirm it fails on the old placeholders.
+3. Regenerate both template PNGs from `tray-icon@2x.png` and confirm the
+   tests pass.
+4. Delete `tray-icon-active*.png` and confirm nothing references them.
+5. Re-run my reproduction and every check in my ship manifest, and save
+   the before/after output.
+6. Check the real menu bar on my Mac if I can build the app; if not, say
+   so in the PR.
 
-[Record deviations here as they happen: what changed mid-build and
-why. A recorded deviation is honest work; silent drift is not.]
+Deviations (2026-11-08):
+- Step 2: the macOS block needed the same `solidPng()` builder the Linux
+  block had, so I moved the shared PNG helpers above both blocks instead
+  of copying it. That's a test-file change the plan didn't name, still
+  inside the same file.
+- Step 3: the first icons had faint stray pixels around the edge, so the
+  final version drops any pixel under 16% opacity before saving.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: plan-check, grading `plan.md` and `plan-comment.md` against the
+  issue and my posted repro, using my procedure and rubric.
+- What it produced: accept, with all six required checks passing
+  (grounded-cause, bounded-scope, executable-start, decisive-test,
+  thread-direction, repo-policy) and the preferred stated-unknowns check
+  passing too. It used `tray-icon.png` passing the same check as the
+  control that makes the cause believable.
+- Difficulties: I first tried running it as `claude -p` from a script,
+  which couldn't read my skill files, so I ran it in an interactive
+  session. My rubric's bounded-scope check made me justify deleting the
+  red placeholders; it passed only because the issue's own Acceptance
+  list asks for it.
+- What changed: nothing in the plan. The plan comment stays on my
+  computer and isn't posted, as the real-repo scope says.
 
 ---
 
 ## Testing Strategy
 
-[What observable checks prove the fix: your reproduction steps re-run
-against the built change (before and after), and the repo's own test
-suite or checks with the outcome shown. "Tests pass" with nothing
-observable named is not a strategy.]
+Three observable checks, each run before and after the fix:
+
+1. **My reproduction, re-run on the branch.** Before (`main` at
+   `03b04ee`): both template files contain one value, `ffffffff`, and
+   fail the #5273 check with "corner (0,0) is opaque". After (branch at
+   `bc94fe5`): every visible pixel is black (`0,0,0`), the alpha channel
+   carries the shape (82 and 156 levels), it covers 56% / 48% of the
+   icon, and both files pass the new `assertTrayTemplatePng`.
+2. **The new tests fail first, then pass.** With only the test commit
+   (`4d093a2`), `npx jest tray-icons tray-manager` gave "2 failed, 139
+   passed", the two failures being the real icons. With the new icons
+   (`a746401`): "141 passed".
+3. **The project's own checks from my ship manifest.** The full Electron
+   suite (`cd tests/electron && npm test`, as CI runs it): 60 suites,
+   1563 passed, 2 skipped. `util/lint.py --all` and `pytest tests/unit/`:
+   pending until my Python `.venv` is set up.
+
+Not covered yet: the real macOS menu bar in light and dark mode, which
+needs the desktop app built. I checked rendered previews instead (the
+glyph on a light and a dark background), and the PR says so.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: the repo's own Jest suite, my Node reproduction commands, and my
+  ship manifest's check list.
+- What it produced: a clear fail-then-pass on the new tests, the full
+  Electron suite green, and before/after pixel output saved in
+  `test_evidence.md`.
+- Difficulties: my first "after" pixel printout was wrong. It converted
+  colours to hex without leading zeros, so it showed alpha values as if
+  they were colours. I caught it and re-ran it with plain RGB numbers.
+  Lint and pytest need the project's Python environment, which I still
+  have to set up myself.
+- What changed: the evidence file uses the corrected printout.
 
 ---
 
 ## Implementation Notes
 
-[A running log, added to as you work. Date each entry. What you
-built, decisions you made when you made them, wrong turns included.]
+**2026-11-08**
 
-**[Date]**
+Built a prototype of the macOS icon in a scratch folder first, from the
+existing `tray-icon@2x.png`: the robot head's silhouette with the dark
+visor cut out and the cyan eyes kept. Viewed on light and dark
+backgrounds, it still reads as GAIA, so I wrote the plan around it.
+plan-check accepted the plan.
 
-[Entry]
+**2026-11-08**
 
-**[Date]**
+On branch `fix/5281-macos-tray-template-icon`: wrote the template check
+and tests first (`4d093a2`). They failed on the two real icons, as
+expected. Moved the shared PNG test helpers up so the Linux and macOS
+blocks both use them, which I noted as a deviation. Generated the new
+icons, dropping near-invisible stray pixels (`a746401`): 141 tray tests
+pass. Removed the unused red `tray-icon-active*` placeholders
+(`bc94fe5`). Commits follow gaia's `type(scope): summary` style with no
+AI credit line, because gaia's CLAUDE.md forbids one.
 
-[Entry]
+**2026-11-08**
+
+Drafted the PR description from gaia's template. My voice guard stopped
+it: I had ticked "real-world evidence matched to the surface I changed",
+but the real menu bar isn't captured yet. I unticked it and explained
+why, and the guard then passed it.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: Claude Code on the branch, with my `CLAUDE.local.md` memory
+  file loaded (the files involved and gaia's no-attribution rule), plus
+  my voice guard on the PR draft.
+- What it produced: three small commits (tests, icons, cleanup) and a
+  PR draft that passes my voice rules.
+- Difficulties: installing packages and creating the Python environment
+  were blocked for the assistant, so those steps are mine to run. The guard
+  caught a checkbox I shouldn't have ticked.
+- What changed: I now run the voice guard on the PR draft before the
+  ship-gate, not only at posting time.
 
 ---
 
