@@ -91,10 +91,19 @@ the old check "can't" pass a one-colour icon, and naming Claude, which
 gaia's CLAUDE.md forbids. I fixed both before opening the PR, and the
 hook let it through on the last PASS.
 
-**Unit 8: [one line on the tool work]**
+**Unit 8: installed the PR monitor, wrote a playbook from gaia's real response times, and ran it on PR #6989 (2026-11-09)**
 
-[2-4 sentences: the PR-monitor and your playbook. What it read, what it
-drafted, what you did with the draft.]
+I based my playbook's nudge threshold on data, not a guess: in 70
+recently merged outside PRs, gaia's first maintainer response came at a
+median of 0.5 days and never later than 5.2, so I nudge only after 7
+quiet days, once, tagging one person. The monitor read my PR (bot
+"Approve", no human review yet) and drafted a wait note, not a reply,
+which matched my rule that bot reviews get no answer, so I posted
+nothing. What confused me at first was its "merge state UNSTABLE": I
+checked and found GitHub holds CI for first-time contributors (8
+workflows "action_required", including Unit Tests) until a maintainer
+approves them. Now I know the Python tests will run in CI, and that's
+the new fact my nudge would carry.
 
 ---
 
@@ -436,6 +445,15 @@ On my branch it showed the GAIA head, tinted white by macOS. I put the
 screenshots on a separate `-evidence` branch of my fork and embedded them
 the way gaia's template asks. Then: ship-gate PASS, PR #6989 opened.
 
+**2026-11-09**
+
+gaia's automated reviewer approved PR #6989. Installed the PR monitor and
+wrote my playbook, measuring gaia's response times from 70 merged
+outside PRs (median 0.5 days, max 5.2) to set a 7-day nudge threshold.
+The monitor drafted a wait note, so I posted nothing. Found that 8 CI
+workflows, Unit Tests included, are waiting on maintainer approval
+because I'm a first-time contributor.
+
 **Toolkit**
 
 - Tool: Claude Code on the branch, with my `CLAUDE.local.md` memory
@@ -477,8 +495,16 @@ filled in:
 
 **Maintainer Feedback:**
 
-- 2026-11-08: none yet. gaia's CI started on the PR (`label` and
-  `verdict` passed; `pr-review` pending).
+- 2026-11-08: gaia's automated reviewer (`github-actions`) posted
+  "Verdict: Approve … Nothing blocks the merge". It decoded the new icon
+  and confirmed "a head outline with the visor cut out and the eyes
+  kept". No human maintainer has reviewed yet. GitHub is holding 8 CI
+  workflows (Unit Tests, Lint, Electron tests, …) as "action_required"
+  until a maintainer approves CI for a first-time contributor.
+- 2026-11-09: I didn't reply. My playbook says bot reviews get no reply,
+  and my PR monitor drafted a wait note, not a comment. My one nudge
+  waits until 2026-11-16 (7 quiet days), and only if no human has
+  commented by then.
 
 **Status:** Awaiting review
 
@@ -508,25 +534,71 @@ filled in:
 
 **Technical Skills Gained**
 
-[What you learned technically, named concretely.]
+- How macOS template images work: the menu bar draws only the alpha
+  channel and tints it, so a fully opaque PNG becomes a filled square
+  however it looks in an image viewer. Fixing it meant building the
+  alpha mask from the real logo with Pillow.
+- Reading and testing PNGs at the byte level: gaia's own
+  `decodeRgbaPng` helper, and writing a Jest check
+  (`assertTrayTemplatePng`) that fails on the old placeholder before the
+  fix and passes after.
+- How Electron loads per-platform tray icons (`ICON_SPECS`,
+  `setTemplateImage`) and how to run gaia's desktop app from source to
+  see the result.
+- Working a real fork: `origin` vs `upstream` remotes, keeping local
+  files out of the PR with `.git/info/exclude`, an evidence-only branch
+  for screenshots, and conventional commits that follow the repo's
+  rules (no AI attribution).
 
 **Challenges Overcome**
 
-[What was hard and how you solved it; point at the real events, the
-Toolkit blocks above are full of them.]
+- **Finding an issue that was really free.** My scout's first scans
+  surfaced toy repos and issues already claimed in comments. I patched
+  the strategy and the rubric's `not-claimed` check until it found
+  gaia#5281.
+- **The Python test suite.** It first couldn't even load (`fastapi`
+  missing; gaia's own workflow showed the right `.[dev,api]` install),
+  then hung twice on my Mac. I didn't hide it: I moved it to the
+  manifest's excluded table with a dated reason and said so in the PR.
+- **Proving it on the real surface.** My pr-precheck rejected the PR
+  for having no real-world evidence. I ran the desktop app; the first
+  "after" still showed the square because I was still on `main`. On my
+  branch it showed the GAIA head, and those screenshots went into the PR.
+- **Words that weren't quite true.** My first issue comment promised a
+  PR "within the next week", and I only caught that after posting and
+  edited it. After that my tools caught the rest before maintainers saw
+  them: a ticked checkbox I hadn't earned, a false technical claim, and
+  naming Claude where gaia forbids it.
 
 **What I'd Do Differently Next Time**
 
-[Reflection on your process.]
+- Hold every draft against my voice guide *before* it's posted. My
+  first claim went up with a "PR within a week" promise I had to edit
+  out afterwards.
+- Check which git branch I'm on before testing anything visual. I lost
+  time looking at the old square on `main`.
+- Set up the project's full dev environment, the way its CI does,
+  before writing the plan, so slow or hanging test suites show up
+  early instead of on the day I open the PR.
+- As a lead Android developer I review code every day. Being the
+  outside contributor on someone else's repo showed me how much a clear
+  issue, a test that fails first, and honest evidence speed up a review.
 
 ---
 
 ## Resources Used
 
-[What actually helped, not a reading list. List things this story
-already shows you using: the doc you followed to set the environment
-up, the thread that explained the bug, the person who answered you.
-One real entry beats ten plausible ones.]
-
-- [Link to documentation that helped]
-- [Discussion, issue, or post that helped]
+- gaia's contributing guide (claiming, branch naming, PR template, test
+  commands): https://github.com/amd/gaia/blob/main/CONTRIBUTING.md
+- The issue itself, whose acceptance checklist set the scope:
+  https://github.com/amd/gaia/issues/5281
+- PR #5273, the Linux tray fix whose `assertTrayLogoPng` check and
+  tests I extended: https://github.com/amd/gaia/pull/5273
+- gaia's dev setup guide (`uv venv`, `uv pip install -e ".[dev]"`):
+  https://github.com/amd/gaia/blob/main/docs/reference/dev.mdx
+- gaia's `.github/workflows/publish.yml`, whose comment explained why
+  `.[dev]` alone can't collect the unit tests and `.[dev,api]` can.
+- Electron's `nativeImage` docs on template images (macOS uses only the
+  alpha channel): https://www.electronjs.org/docs/latest/api/native-image (its "Template Image" section)
+- gaia's automated PR review on my PR, which independently checked the
+  new icon: https://github.com/amd/gaia/pull/6989
