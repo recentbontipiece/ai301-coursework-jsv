@@ -72,10 +72,10 @@ broke my new rule "A first step and a report-back, never a date for the
 fix", so I rewrote the draft until it passed, which showed me the guard
 works best before posting, not after. My `CLAUDE.local.md` in the gaia
 clone (58 lines, kept out of git) records the tray-icon files, the PR
-rules, and gaia's "no Claude attribution" rule. Two things fell short:
-my `claude` command broke during an update and had to be reinstalled
-before the guard could run, and I haven't run gaia's test commands yet,
-so the file marks them "not yet run".
+rules, gaia's "no Claude attribution" rule, and the tray test command,
+which I ran myself (135 tests pass on `main`, even with the blank icons,
+which shows the test gap). What fell short: my `claude` command broke
+during an update and had to be reinstalled before the guard could run.
 
 **Unit 7: [one line on the tool work]**
 
