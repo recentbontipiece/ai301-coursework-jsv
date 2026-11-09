@@ -11,7 +11,7 @@ files and no evidence uploads are part of Assignment 5.
 **Student:** John Vallon
 **GitHub Username:** recentbontipiece
 **Issue:** https://github.com/amd/gaia/issues/5281
-**Pull Request:** not opened yet (waiting for maintainer reply to claim and repro, 2026-11-08)
+**Pull Request:** https://github.com/amd/gaia/pull/6989
 
 One repository, built across units 5 to 8, telling the whole story of your real
 contribution. Fill it as you work, not at the end — the sections below ask for evidence that
@@ -77,10 +77,19 @@ which I ran myself (135 tests pass on `main`, even with the blank icons,
 which shows the test gap). What fell short: my `claude` command broke
 during an update and had to be reinstalled before the guard could run.
 
-**Unit 7: [one line on the tool work]**
+**Unit 7: installed the ship-gate, wrote my gaia manifest, and opened PR #6989 after four gate runs (2026-11-08)**
 
-[2-4 sentences: the ship-gate and your gate manifest. What it produced
-on your real branch, what fought you, what changed because of it.]
+My manifest runs gaia's own checks: the Electron setup and tests, the
+Python install, and lint. The full Python suite is in the excluded table,
+dated, because it hangs on my Mac and takes far longer than the gate's
+25-minute limit, and my PR changes no Python. The first run stopped on my
+pr-precheck's `template-asks` check: gaia's template asks for real-world
+evidence, and I had none, so I ran the desktop app and added before/after
+menu-bar screenshots instead of changing the rubric. The next passes
+still flagged two wording problems in my description: a false claim that
+the old check "can't" pass a one-colour icon, and naming Claude, which
+gaia's CLAUDE.md forbids. I fixed both before opening the PR, and the
+hook let it through on the last PASS.
 
 **Unit 8: [one line on the tool work]**
 
@@ -417,6 +426,16 @@ it: I had ticked "real-world evidence matched to the surface I changed",
 but the real menu bar isn't captured yet. I unticked it and explained
 why, and the guard then passed it.
 
+**2026-11-08**
+
+Ran the desktop app with `npm start`. The backend install fails in a dev
+checkout (`amd-gaia[ui]==0.26.0` isn't on PyPI), but the tray appears
+before that step. On `main` the menu bar showed a plain white square. The
+first "after" try still showed the square because I was still on `main`.
+On my branch it showed the GAIA head, tinted white by macOS. I put the
+screenshots on a separate `-evidence` branch of my fork and embedded them
+the way gaia's template asks. Then: ship-gate PASS, PR #6989 opened.
+
 **Toolkit**
 
 - Tool: Claude Code on the branch, with my `CLAUDE.local.md` memory
@@ -434,27 +453,54 @@ why, and the guard then passed it.
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when opened]
+**PR Link:** https://github.com/amd/gaia/pull/6989
 
-**PR Description:** [what the PR says; much of the content above
-adapts into it]
+**PR Description:** "fix(tray): draw the GAIA logo in the macOS menu bar
+instead of a square", opened 2026-11-08 from
+`recentbontipiece:fix/5281-macos-tray-template-icon` into `amd/gaia`
+`main`, with `Fixes #5281`. It follows gaia's PR template, every section
+filled in:
+- **Summary and Why:** macOS draws a template image from its alpha only,
+  and both files were opaque white, so the menu bar showed a square. The
+  #5273 check never ran on the macOS files.
+- **Changes:** the two new 16/32 px template PNGs made from the existing
+  logo, the new `assertTrayTemplatePng` and its tests, the moved shared
+  helpers, and the removed unused red placeholders. It offers to switch
+  to 18/36 or 22/44 px if the maintainers prefer.
+- **Test plan:** the new tests fail then pass (2 failed → 141 passed),
+  the full Electron suite (1563 passed), and lint (0 failed). It says
+  plainly that `pytest tests/unit/` hangs on my Mac.
+- **Evidence:** before/after pixel output, plus before/after menu-bar
+  screenshots embedded from my fork, one appearance only (disclosed).
+- **AI use:** an AI coding assistant as a tool, what it did, and what I
+  did, with no Claude attribution, per gaia's rules.
 
 **Maintainer Feedback:**
 
-- [Date]: [feedback received, or "none yet"; silence is a normal
-  state and costs you nothing]
-- [Date]: [how you addressed it]
+- 2026-11-08: none yet. gaia's CI started on the PR (`label` and
+  `verdict` passed; `pr-review` pending).
 
-**Status:** [Awaiting review / Iterating / Merged / Closed. The
-status is a fact you record, never a grade: the PR is graded as
-opened.]
+**Status:** Awaiting review
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: the ship-gate hook with my `ship-manifest.md`, running gaia's
+  checks and then my pr-precheck before `gh pr create`. I ran it by hand
+  with `check_gate.py --branch` until it passed, then opened the PR
+  through Claude Code.
+- What it produced: four runs. All four project checks passed every
+  time (lint takes 4-7 minutes). Run 1: reject on `template-asks` (no
+  real-world evidence). Runs 2-4: PASS, each with voice-guide notes I
+  acted on. The PR hook honoured the last PASS without re-running.
+- Difficulties: `pytest tests/unit/` couldn't be a must-pass check. It
+  first failed to collect (`fastapi` missing, fixed with gaia's
+  `.[dev,api]` install), then hung twice on a localhost socket. Every
+  description edit voids a PASS, so each wording fix cost another
+  ~6-minute run.
+- What changed: I added a setup row and moved pytest to the excluded
+  table with a dated reason. I got real menu-bar screenshots instead of
+  weakening my rubric, and corrected two claims in the description
+  before opening the PR.
 
 ---
 
