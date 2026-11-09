@@ -63,11 +63,19 @@ showed my rubric still ignored people's "I'll take this" comments, a
 leftover classroom rule, so I fixed it and re-tested it against the
 Unit 1 test set (20/20). My third scan found the issue I claimed.
 
-**Unit 6: [one line on the tool work]**
+**Unit 6: installed the voice guard with new upstream rules, and wrote a memory file for my gaia clone (2026-11-08)**
 
-[2-4 sentences: the voice-guard, the repo-memory file. What broke or
-fell short, and what changed because of it. "Nothing broke" counts when
-it is true - say how you know.]
+I merged my three voice-guide copies into one, added rules for claims,
+questions and pings, and installed the guard hook. The wiring test was
+stopped as expected. The guard then caught my already-posted claim: it
+broke my new rule "A first step and a report-back, never a date for the
+fix", so I rewrote the draft until it passed, which showed me the guard
+works best before posting, not after. My `CLAUDE.local.md` in the gaia
+clone (58 lines, kept out of git) records the tray-icon files, the PR
+rules, and gaia's "no Claude attribution" rule. Two things fell short:
+my `claude` command broke during an update and had to be reinstalled
+before the guard could run, and I haven't run gaia's test commands yet,
+so the file marks them "not yet run".
 
 **Unit 7: [one line on the tool work]**
 
@@ -127,7 +135,12 @@ Claim comment (2026-11-08): https://github.com/amd/gaia/issues/5281#issuecomment
 - What it produced: scan 3 graded 5 of 111 ranked survivors (377 unique
   results). It accepted amd/gaia#5281 with every required check passing:
   repo-liveness, not-claimed, policy-allow, bounded-scope, and
-  well-specified.
+  well-specified. In Unit 6 I re-graded it with the patched rubric: still
+  accept, with the difficulty note **moderate**. The files are named, but
+  the fix touches two images, the #5273 test helper and the tray tests,
+  and the icon size (16/32 vs 18/36 or 22/44) is an open question I've
+  already asked. The other pick, spyre-inference#672, was rated
+  **ambitious** (it needs IBM hardware I don't have).
 - Difficulties: scan 1's top 5 were all minutes-old issues in tiny repos.
   The rubric's `not-claimed` check still followed the classroom rule and
   passed a claimed issue. Search can't see claim comments, so 3 of 5
@@ -137,8 +150,12 @@ Claim comment (2026-11-08): https://github.com/amd/gaia/issues/5281#issuecomment
   translation/Windows/classroom drops, strict Q1>Q2>Q3>Q4, prefer
   MEMBER/COLLABORATOR), then `-linked:pr` on every query. The rubric's
   `not-claimed` now counts recent claim comments (Unit 1 regression
-  20/20). I'd add a required "a human maintainer reviews PRs" check
-  next.
+  20/20). Unit 6 scope patch: I replaced my strict `bounded-scope` check
+  with `scope-feasible`, which only rejects issues that aren't one piece
+  of work. Open design questions and "TBD"s now give a difficulty note
+  (straightforward / moderate / ambitious) instead of a reject. I'd still
+  add a required "a human maintainer reviews PRs" check, and make
+  `not-claimed` say "other than my own claim".
 
 ---
 
@@ -221,10 +238,8 @@ built and run the desktop app.
 
 **Reproduction Evidence**
 
-- **Commit showing reproduction:** none yet. I reproduced on an
-  unmodified clone of upstream `main` (`03b04ee`), so there is no fork
-  commit. Planned: fork, and commit a failing test that runs the #5273
-  check on the macOS template files.
+- **Commit showing reproduction:** none. I reproduced on an unmodified
+  clone of upstream `main` (`03b04ee`).
 - **Screenshots/logs:** the command output is posted in my repro comment:
   https://github.com/amd/gaia/issues/5281#issuecomment-6728581084
 - **My findings:** confirmed at the asset level. Both macOS template
@@ -236,18 +251,24 @@ built and run the desktop app.
 
 **Toolkit**
 
-- Tool: Claude Code ran the reproduction in my clone and drafted both
-  comments; I read them and posted them myself.
-- What it produced: the two-command, Node-only reproduction above, and
-  a posted repro comment that separates what is confirmed (assets) from
-  what is not (menu-bar rendering).
-- Difficulties: my posted claim first promised "a PR within the next
-  week", which breaks my voice guide ("I never promise a fix, merge, or
-  deadline"). I edited the comment to remove it. Also, repro-check's
-  live mode can't grade this package: its staff `scope.md` still allows
-  only the Path Review repo.
-- What changed: I edited the claim comment upstream. Next time I'll hold
-  the claim draft against my voice guide before posting, not after.
+- Tool: repro-check in live mode, with the new real-repo scope, grading
+  my claim draft and repro report together against my rubric and voice
+  guide. Claude Code ran the reproduction and drafted both comments; I
+  read them and posted them myself.
+- What it produced: accept, with all five required checks passing
+  (issue-match, rerunnable, environment-fidelity, evidence-support,
+  repo-comms). Its key reading: my output shows the same flat-white
+  files the issue describes, and the report says plainly that I haven't
+  seen the menu bar itself.
+- Difficulties: I posted the claim and the repro comment before Unit 6's
+  tools existed. My first claim promised "a PR within the next week",
+  which I edited out. The Unit 6 instructions say the report shouldn't
+  go on the issue at all, but mine was already up. Running repro-check
+  from a script (`claude -p`) failed because that session couldn't read
+  the skill's files, so I ran it inside an interactive session instead.
+- What changed: I now check every draft with the voice guard and
+  repro-check before it goes upstream, not after. The rest of the proof
+  will go in my PR description.
 
 ---
 

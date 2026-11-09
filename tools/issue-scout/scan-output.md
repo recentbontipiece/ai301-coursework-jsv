@@ -98,3 +98,34 @@ Rejected:
    "verdict": "reject"}
 ]
 ```
+
+## 2026-11-08 Unit 6 direct re-grade (rubric v3: scope-feasible + difficulty note)
+
+`issue-scout: grade https://github.com/amd/gaia/issues/5281 https://github.com/torch-spyre/spyre-inference/issues/672`
+
+Accepted, in fit order:
+1. amd/gaia#5281: macOS menu-bar template icons are flat placeholders. Source: direct (first surfaced by scan 2/3, Q1). Fit: active org project with real maintainers, a bug with an acceptance checklist, needs a Mac (have one); not Python. **Difficulty: moderate.** The issue names the asset files, but the fix spans two PNGs, the #5273 test helper (its >= 64-colour rule doesn't fit a monochrome glyph), and the tray tests. Open edge: icon size 16/32 (current `ICON_SPECS.darwin`) vs 18/36 or 22/44 (the issue), already asked upstream.
+2. torch-spyre/spyre-inference#672: native rms norm breaks `vllm bench latency`. Source: direct (first surfaced by scan 3, Q1). Fit: poor. It needs IBM Spyre accelerator hardware and the error comes from the backend compiler, both on my avoid list, and the hive bot says PRs land "no waiting on a human". **Difficulty: ambitious.** Unfamiliar subsystem (Spyre backend compiler). Open edge: how to reproduce at all without Spyre hardware.
+
+Rejected: none.
+
+Note: gaia#5281's only claim comments are my own (recentbontipiece, 2026-11-08). I graded not-claimed as pass because they're not a competing claim (scope.md: "First claim stands, including yours"). The rubric's wording doesn't say "other than mine", which is logged in scan-notes.md.
+
+```json
+[
+  {"item": "https://github.com/amd/gaia/issues/5281", "checks": [
+    {"name": "repo-liveness", "grade": "pass", "evidence": "archived: false; pushed 2026-11-08; all 5 last default-branch commits 2026-11-08"},
+    {"name": "not-claimed", "grade": "pass", "evidence": "assignees: none; no linked PR (cross-ref #5354 MERGED); only claim comments are my own (recentbontipiece, 2026-11-08)"},
+    {"name": "policy-allow", "grade": "pass", "evidence": "CONTRIBUTING.md has no AI statement; AGENTS.md sets rules for coding agents, no ban"},
+    {"name": "scope-feasible", "grade": "pass", "evidence": "One piece of work: replace tray-iconTemplate.png/@2x.png, extend #5273 asset tests, remove tray-icon-active*.png"},
+    {"name": "well-specified", "grade": "pass", "evidence": "'## Acceptance' checklist names both files, sizes, light/dark check, and tests"}],
+   "verdict": "accept"},
+  {"item": "https://github.com/torch-spyre/spyre-inference/issues/672", "checks": [
+    {"name": "repo-liveness", "grade": "pass", "evidence": "archived: false; pushed 2026-11-08; last 5 commits 2026-11-06..2026-11-07"},
+    {"name": "not-claimed", "grade": "pass", "evidence": "assignees: none; no linked or mentioned PRs; only comment is hivecommons-hive bot invitation, not a claim"},
+    {"name": "policy-allow", "grade": "pass", "evidence": "No AI ban; hive comment welcomes contributions 'made with your own AI coding agent'"},
+    {"name": "scope-feasible", "grade": "pass", "evidence": "Single bug: PR #509 broke `vllm bench latency` with a Spyre backend RuntimeError"},
+    {"name": "well-specified", "grade": "pass", "evidence": "Exact repro command and full RuntimeError text"}],
+   "verdict": "accept"}
+]
+```
