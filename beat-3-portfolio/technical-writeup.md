@@ -14,7 +14,7 @@ tray-iconTemplate.png 16x16 distinct RGBA values: [ 'ffffffff' ]
 tray-iconTemplate@2x.png 32x32 distinct RGBA values: [ 'ffffffff' ]
 ```
 
-Before implementing the fix, I wrote a regression test (`assertTrayTemplatePng` in `tests/electron/_helpers/tray-icon-png.cjs`) to catch missing macOS template checks, verifying dimensions, transparent corners, black RGB values, and alpha coverage ratios. Running Jest confirmed the test failed on the old icons (`4d093a2`) and passed once the redrawn assets were committed (`a746401`).
+Before implementing the fix, I wrote a regression test (`assertTrayTemplatePng` in `tests/electron/_helpers/tray-icon-png.cjs`) verifying dimensions, transparent corners, black RGB values, and alpha coverage ratios. Running Jest confirmed the test failed on the old icons (`4d093a2`) and passed once the redrawn assets were committed (`a746401`).
 
 ```js
 function assertTrayTemplatePng(buf, size, label) {
@@ -35,7 +35,7 @@ Tests:       2 failed, 139 passed, 141 total
 Tests:       141 passed, 141 total
 ```
 
-To fix the artwork, I extracted the GAIA robot head from `tray-icon@2x.png`, converted it to a pure black (`0,0,0`) transparent-background glyph at 16×16 px and 32×32 px, refined the visor and eye details, trimmed edge noise, and deleted unused placeholder files (`tray-icon-active.png` and `@2x` in `bc94fe5`).
+To fix the artwork, I extracted the GAIA robot head from `tray-icon@2x.png`, converted it to a pure black (`0,0,0`) transparent-background glyph at 16×16 px and 32×32 px, trimmed edge noise, and deleted unused placeholder files (`tray-icon-active.png` and `@2x` in `bc94fe5`).
 
 ```text
 tray-iconTemplate.png 16x16 visible RGB: [ '0,0,0' ] | distinct alpha levels: 82 | coverage: 56%
